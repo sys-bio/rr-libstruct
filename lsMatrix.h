@@ -100,6 +100,11 @@ public:
     void initializeFromConst2DMatrix(const T** oRawData, int nRows, int nCols);
 
     /**
+     * get values from 2d matrix
+     */
+    std::vector<std::vector<T>> getValues();
+
+    /**
      * returns a 2D data array
      */
     T** get2DMatrix(int &nRows, int &nCols);
@@ -532,15 +537,6 @@ T* Matrix<T>::getCopy(bool transpose)
     }
     return result;
 }
-
-//template<class T>
-//void Matrix<T>::initializeFrom2DMatrix(T** &oRawData, int nRows, int nCols);
-//
-//template<class T>
-//void Matrix<T>::initializeFromConst2DMatrix( const T** oRawData, int nRows, int nCols);
-
-//template<class T>
-//T** Matrix<T>::get2DMatrix(int &nRows, int &nCols);
 
 template<class T>
 void Matrix<T>::swapRows(unsigned int row1, unsigned int row2)

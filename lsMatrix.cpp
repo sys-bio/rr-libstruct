@@ -105,6 +105,21 @@ template<typename T> void Matrix<T>::initializeFromConst2DMatrix(const T** oRawD
     }
 }
 
+template<typename T> std::vector<std::vector<T>> Matrix<T>::getValues(){
+    const unsigned int nrow = numRows();
+    const unsigned int ncol = numCols();
+    auto arr = get2DMatrix((int &) nrow, (int &) ncol);
+    std::vector<std::vector<T> > store(nrow, std::vector<T>(ncol));
+
+    for (int i = 0; i < numRows(); i++) {
+        // preallocate columns
+        for (int j = 0; j < numCols(); j++) {
+            store[i][j] = arr[i][j];
+        }
+    }
+    return store;
+}
+
 template<typename T> T** Matrix<T>::get2DMatrix(int &nRows, int &nCols)
 {
     T** oBuffer = (T**) malloc(sizeof(T*)*_Rows);
