@@ -65,6 +65,8 @@ else ()
     #target_link_libraries (${target}-static libf2c)
 endif ()
 
+include(GNUInstallDirs)
+
 set(headers
         lsExporter.h
         lsMatrix.h
@@ -75,7 +77,6 @@ set(headers
         lsUtils.h
         )
 
-set(RR_STRUCT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 install(TARGETS ${target}-static
         EXPORT ${target}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -93,5 +94,7 @@ install(
 )
 
 #install public headers
-install(FILES ${header_files} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rr-libstruct)
+
+message(STATUS "${CMAKE_INSTALL_INCLUDEDIR}/rr-libstruct")
+install(FILES ${headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/rr-libstruct")
 
