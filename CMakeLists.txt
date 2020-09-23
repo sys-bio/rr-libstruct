@@ -75,27 +75,23 @@ set(headers
         lsUtils.h
         )
 
-# install the headers at configure time so we can build rr without the full install configuration
 set(RR_STRUCT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-file(MAKE_DIRECTORY ${RR_STRUCT_INCLUDE_DIR})
-file(COPY ${headers} DESTINATION "${RR_STRUCT_INCLUDE_DIR}/rr-libstruct")
-set(RR_STRUCT_INCLUDE_DIR ${RR_STRUCT_INCLUDE_DIR} PARENT_SCOPE)
-
-if (WIN32)
-
-endif ()
-
 install(TARGETS ${target}-static
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
+        EXPORT ${target}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${target}
+        )
 
-#Install required files
-#install(FILES ${headers}
-#        DESTINATION include/rr-libstruct)
+# install the export info
+install(
+        EXPORT ${target}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+        NAMESPACE ${target}::
+        FILE ${target}-config.cmake
+)
 
-#install(TARGETS ${target}
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
-#        RUNTIME DESTINATION bin)
-#
+#install public headers
+install(FILES ${header_files} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rr-libstruct)
 
