@@ -52,12 +52,12 @@ namespace ls {
 
         if (numRows == 0) return oResult;
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
+        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
+        lapack_complex_double *work = new lapack_complex_double[lwork];
+        memset(work, 0, sizeof(lapack_complex_double) * lwork);
         doublereal *rwork = new doublereal[lwork];
         memset(rwork, 0, sizeof(doublereal) * lwork);
 
@@ -102,12 +102,12 @@ namespace ls {
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
+        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
+        lapack_complex_double *work = new lapack_complex_double[lwork];
+        memset(work, 0, sizeof(lapack_complex_double) * lwork);
         doublereal *rwork = new doublereal[lwork];
         memset(rwork, 0, sizeof(doublereal) * lwork);
 
@@ -556,14 +556,14 @@ namespace ls {
 
         if (numRows == 0) return new ComplexMatrix();
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *vr = new doublecomplex[numRows * numRows];
-        memset(vr, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
+        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
+        lapack_complex_double *vr = new lapack_complex_double[numRows * numRows];
+        memset(vr, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *work = new lapack_complex_double[lwork];
+        memset(work, 0, sizeof(lapack_complex_double) * lwork);
         doublereal *rwork = new doublereal[lwork];
         memset(rwork, 0, sizeof(doublereal) * lwork);
 
@@ -615,14 +615,14 @@ namespace ls {
 
         if (numRows == 0) return new ComplexMatrix();
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *vr = new doublecomplex[numRows * numRows];
-        memset(vr, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
+        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
+        lapack_complex_double *vr = new lapack_complex_double[numRows * numRows];
+        memset(vr, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *work = new lapack_complex_double[lwork];
+        memset(work, 0, sizeof(lapack_complex_double) * lwork);
         doublereal *rwork = new doublereal[lwork];
         memset(rwork, 0, sizeof(doublereal) * lwork);
 
@@ -745,16 +745,16 @@ namespace ls {
 
         lapack_int lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
         lapack_int lrwork = 5 * min_MN * min_MN + 7 * min_MN;
-        doublecomplex *A = new doublecomplex[numRows * numCols];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numCols);
-        doublecomplex *U = new doublecomplex[numRows * numRows];
-        memset(U, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *VT = new doublecomplex[numCols * numCols];
-        memset(VT, 0, sizeof(doublecomplex) * numCols * numCols);
+        lapack_complex_double *A = new lapack_complex_double[numRows * numCols];
+        memset(A, 0, sizeof(lapack_complex_double) * numRows * numCols);
+        lapack_complex_double *U = new lapack_complex_double[numRows * numRows];
+        memset(U, 0, sizeof(lapack_complex_double) * numRows * numRows);
+        lapack_complex_double *VT = new lapack_complex_double[numCols * numCols];
+        memset(VT, 0, sizeof(lapack_complex_double) * numCols * numCols);
         doublereal *S = new doublereal[min_MN];
         memset(S, 0, sizeof(doublereal) * min_MN);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
+        lapack_complex_double *work = new lapack_complex_double[lwork];
+        memset(work, 0, sizeof(lapack_complex_double) * lwork);
         doublereal *rwork = new doublereal[lrwork];
         memset(rwork, 0, sizeof(doublereal) * lrwork);
         lapack_int *iwork = new lapack_int[8 * min_MN];
@@ -1080,7 +1080,7 @@ namespace ls {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
                 A[i + numRows * j].r = real(oMatrix(i, j));
@@ -1093,8 +1093,8 @@ namespace ls {
 
         lapack_int *ipvt = new lapack_int[numRows];
         memset(ipvt, 0, sizeof(lapack_int) * numRows);
-        doublecomplex *work = new doublecomplex[numRows];
-        memset(work, 0, sizeof(doublecomplex) * numRows);
+        lapack_complex_double *work = new lapack_complex_double[numRows];
+        memset(work, 0, sizeof(lapack_complex_double) * numRows);
 
         // Carry out LU Factorization
         lapack_int info;
@@ -1147,7 +1147,7 @@ namespace ls {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
+        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
                 A[i + numRows * j].r = real(oMatrix(i, j));
@@ -1160,8 +1160,8 @@ namespace ls {
 
         lapack_int *ipvt = new lapack_int[numRows];
         memset(ipvt, 0, sizeof(lapack_int) * numRows);
-        doublecomplex *work = new doublecomplex[numRows];
-        memset(work, 0, sizeof(doublecomplex) * numRows);
+        lapack_complex_double *work = new lapack_complex_double[numRows];
+        memset(work, 0, sizeof(lapack_complex_double) * numRows);
 
         // Carry out LU Factorization
         lapack_int info;
