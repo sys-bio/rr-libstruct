@@ -41,10 +41,10 @@ namespace ls {
 
         vector<Complex> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
+        lapack_int lwork = 2 * numRows;
+        lapack_int info;
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -94,10 +94,10 @@ namespace ls {
 
         vector<Complex> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
+        lapack_int lwork = 2 * numRows;
+        lapack_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -148,8 +148,8 @@ namespace ls {
 
         vector<DoubleMatrix *> oResult;
 
-        integer row = oMatrix.numRows();
-        integer col = oMatrix.numCols();
+        lapack_int row = oMatrix.numRows();
+        lapack_int col = oMatrix.numCols();
 
         if (row * col == 0) {
             DoubleMatrix *oMatrixQ = new DoubleMatrix(row, row);
@@ -161,8 +161,8 @@ namespace ls {
             return oResult;
         }
 
-        integer minRowCol = min(row, col);
-        integer lwork = 16 * col;
+        lapack_int minRowCol = min(row, col);
+        lapack_int lwork = 16 * col;
 
         doublereal *A = oMatrix.getCopy(true);
 
@@ -193,10 +193,10 @@ namespace ls {
             tau = new doublereal[minRowCol];
             memset(tau, 0, sizeof(doublereal) * minRowCol);
         }
-        integer *jpvt = NULL;
+        lapack_int *jpvt = NULL;
         if (col) {
-            jpvt = new integer[col];
-            memset(jpvt, 0, sizeof(integer) * col);
+            jpvt = new lapack_int[col];
+            memset(jpvt, 0, sizeof(lapack_int) * col);
         }
         doublereal *work = NULL;
         if (lwork) {
@@ -204,7 +204,7 @@ namespace ls {
             memset(work, 0, lwork);
         }
 
-        integer info;
+        lapack_int info;
         int out;
 
         //Log(lDebug5) << "Input:\n"<<ls::print(row, col, A);
@@ -306,8 +306,8 @@ namespace ls {
         //Log(lDebug5) << "=== getQR " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer row = oMatrix.numRows();
-        integer col = oMatrix.numCols();
+        lapack_int row = oMatrix.numRows();
+        lapack_int col = oMatrix.numCols();
         if (row * col == 0) {
             vector<DoubleMatrix *> oResult;
             DoubleMatrix *oMatrixQ = new DoubleMatrix(row, row);
@@ -317,8 +317,8 @@ namespace ls {
             return oResult;
         }
 
-        integer lwork = 16 * col;
-        integer minRowCol = min(row, col);
+        lapack_int lwork = 16 * col;
+        lapack_int minRowCol = min(row, col);
 
         doublereal *Q = new doublereal[row * row];
         doublereal *R = new doublereal[row * col];
@@ -330,7 +330,7 @@ namespace ls {
 
         //Log(lDebug5) << "Input:\n"<<ls::print(row, col, A);
 
-        integer info;
+        lapack_int info;
         dgeqrf_(&row, &col, A, &row, tau, work, &lwork, &info);
 
         //Log(lDebug5) << "A: after dgeqrt)\n"<<ls::print(row, col, A);
@@ -426,13 +426,13 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl << endl;
         DoubleMatrix *oTranspose = oMatrix.getTranspose();
 
-        integer numRows = oTranspose->numRows();
-        integer numCols = oTranspose->numCols();
+        lapack_int numRows = oTranspose->numRows();
+        lapack_int numCols = oTranspose->numCols();
 
         // determine sizes
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
-        integer lwork = 3 * min_MN * min_MN + max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // 'A'
+        lapack_int min_MN = min(numRows, numCols);
+        lapack_int max_MN = max(numRows, numCols);
+        lapack_int lwork = 3 * min_MN * min_MN + max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // 'A'
 
         // allocate arrays for lapack
         doublereal *A = oTranspose->getCopy(true);
@@ -444,9 +444,9 @@ namespace ls {
         memset(U, 0, sizeof(doublereal) * numRows * numRows);
         doublereal *VT = new doublereal[numCols * numCols];
         memset(VT, 0, sizeof(doublereal) * numCols * numCols);
-        integer *iwork = new integer[8 * min_MN];
+        lapack_int *iwork = new lapack_int[8 * min_MN];
 
-        integer info;
+        lapack_int info;
         char jobz = 'A';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, iwork, &info);
 
@@ -507,24 +507,24 @@ namespace ls {
 
         vector<double> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        lapack_int min_MN = min(numRows, numCols);
+        lapack_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return oResult;
 
-        integer lwork = 3 * min_MN + max(max_MN, 7 * min_MN);    // specified in dgesdd description
+        lapack_int lwork = 3 * min_MN + max(max_MN, 7 * min_MN);    // specified in dgesdd description
 
         doublereal *A = oMatrix.getCopy(true);
         doublereal *S = new doublereal[min_MN];
         memset(S, 0, sizeof(doublereal) * min_MN);
         doublereal *work = new doublereal[lwork];
         memset(work, 0, sizeof(doublereal) * lwork);
-        integer *iwork = new integer[8 * min_MN];
+        lapack_int *iwork = new lapack_int[8 * min_MN];
 
-        integer info;
+        lapack_int info;
         char jobz = 'N';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, NULL, &numRows, NULL, &numCols, work, &lwork, iwork, &info);
 
@@ -546,10 +546,10 @@ namespace ls {
         //Log(lDebug5) << "=== getEigenVectors " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
+        lapack_int lwork = 2 * numRows;
+        lapack_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -605,10 +605,10 @@ namespace ls {
         //Log(lDebug5) << "=== getEigenVectors " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
+        lapack_int lwork = 2 * numRows;
+        lapack_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -666,16 +666,16 @@ namespace ls {
         //Log(lDebug5) << "=== getSingularValsBySVD " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = inputMatrix.numRows();
-        integer numCols = inputMatrix.numCols();
+        lapack_int numRows = inputMatrix.numRows();
+        lapack_int numCols = inputMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        lapack_int min_MN = min(numRows, numCols);
+        lapack_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return;
 
-        //integer lwork    = 3*min_MN + max(max_MN, 7*min_MN);    // specified in dgesdd description
-        integer lwork = 3 * min_MN * min_MN +
+        //lapack_int lwork    = 3*min_MN + max(max_MN, 7*min_MN);    // specified in dgesdd description
+        lapack_int lwork = 3 * min_MN * min_MN +
                         max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // specified in dgesdd description for job 'A'
 
         doublereal *A = inputMatrix.getCopy(true);
@@ -687,10 +687,10 @@ namespace ls {
         memset(S, 0, sizeof(doublereal) * min_MN);
         doublereal *work = new doublereal[lwork];
         memset(work, 0, sizeof(doublereal) * lwork);
-        integer *iwork = new integer[8 * min_MN];
+        lapack_int *iwork = new lapack_int[8 * min_MN];
 
 
-        integer info;
+        lapack_int info;
         char jobz = 'A';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, iwork, &info);
 
@@ -735,16 +735,16 @@ namespace ls {
         //Log(lDebug5) << "=== getSingularValsBySVD " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = inputMatrix.numRows();
-        integer numCols = inputMatrix.numCols();
+        lapack_int numRows = inputMatrix.numRows();
+        lapack_int numCols = inputMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        lapack_int min_MN = min(numRows, numCols);
+        lapack_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return;
 
-        integer lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
-        integer lrwork = 5 * min_MN * min_MN + 7 * min_MN;
+        lapack_int lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
+        lapack_int lrwork = 5 * min_MN * min_MN + 7 * min_MN;
         doublecomplex *A = new doublecomplex[numRows * numCols];
         memset(A, 0, sizeof(doublecomplex) * numRows * numCols);
         doublecomplex *U = new doublecomplex[numRows * numRows];
@@ -757,7 +757,7 @@ namespace ls {
         memset(work, 0, sizeof(doublecomplex) * lwork);
         doublereal *rwork = new doublereal[lrwork];
         memset(rwork, 0, sizeof(doublereal) * lrwork);
-        integer *iwork = new integer[8 * min_MN];
+        lapack_int *iwork = new lapack_int[8 * min_MN];
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -768,7 +768,7 @@ namespace ls {
             }
         }
 
-        integer info;
+        lapack_int info;
         char jobz = 'A';
         zgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, rwork, iwork,
                 &info);
@@ -808,23 +808,23 @@ namespace ls {
     }
 
     double getRCond(DoubleMatrix &oMatrix) {
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
-        integer minRC = min(numRows, numCols);
+        lapack_int minRC = min(numRows, numCols);
 
         if (minRC == 0) {
             return 0.0;
         }
 
         doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[minRC];
-        memset(vecP, 0, (sizeof(integer) * minRC));
+        lapack_int *vecP = new lapack_int[minRC];
+        memset(vecP, 0, (sizeof(lapack_int) * minRC));
 
-        integer info;
+        lapack_int info;
 
         char norm = '1';
-        integer order = numRows * numCols;
+        lapack_int order = numRows * numCols;
 
         double *work = new doublereal[4 * order];
         memset(work, 0, sizeof(double) * 4 * order);
@@ -833,8 +833,8 @@ namespace ls {
         dgetrf_(&numRows, &numCols, A, &numRows, vecP, &info);
         ls::checkTolerance(numRows * numCols, A, gLapackTolerance);
 
-        integer *iwork = new integer[numRows];
-        memset(iwork, 0, sizeof(integer) * numRows);
+        lapack_int *iwork = new lapack_int[numRows];
+        memset(iwork, 0, sizeof(lapack_int) * numRows);
 
         memset(work, 0, sizeof(double) * 4 * order);
 
@@ -853,8 +853,8 @@ namespace ls {
         //Log(lDebug5) << "=== getLU " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
         int minRC = min(numRows, numCols);
 
@@ -872,10 +872,10 @@ namespace ls {
         }
 
         doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[minRC];
-        memset(vecP, 0, (sizeof(integer) * minRC));
+        lapack_int *vecP = new lapack_int[minRC];
+        memset(vecP, 0, (sizeof(lapack_int) * minRC));
 
-        integer info;
+        lapack_int info;
         dgetrf_(&numRows, &numCols, A, &numRows, vecP, &info);
 
         ls::print(numRows, numCols, A);
@@ -939,20 +939,20 @@ namespace ls {
         //Log(lDebug5) << "=== getLUwithFullPivoting " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
 
         doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[numRows];
-        memset(vecP, 0, (sizeof(integer) * numRows));
-        integer *vecQ = new integer[numRows];
-        memset(vecQ, 0, (sizeof(integer) * numRows));
+        lapack_int *vecP = new lapack_int[numRows];
+        memset(vecP, 0, (sizeof(lapack_int) * numRows));
+        lapack_int *vecQ = new lapack_int[numRows];
+        memset(vecQ, 0, (sizeof(lapack_int) * numRows));
 
-        integer info;
+        lapack_int info;
         dgetc2_(&numRows, A, &numRows, vecP, vecQ, &info);
 
         DoubleMatrix *L = new DoubleMatrix(numRows, numRows);
@@ -1025,8 +1025,8 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl << endl;
         DoubleMatrix *oResultMatrix = NULL;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
 
         if (numRows != numCols)
@@ -1034,8 +1034,8 @@ namespace ls {
 
 
         doublereal *A = oMatrix.getCopy(true);
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
+        lapack_int *ipvt = new lapack_int[numRows];
+        memset(ipvt, 0, sizeof(lapack_int) * numRows);
         doublereal *work = new doublereal[numRows];
         memset(work, 0, sizeof(doublereal) * numRows);
 
@@ -1043,7 +1043,7 @@ namespace ls {
 
 
         // Carry out LU Factorization
-        integer info;
+        lapack_int info;
         dgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
         if (info < 0)
             throw ApplicationException("Error in dgetrf : LU Factorization", "Illegal Value");
@@ -1073,8 +1073,8 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl;
 
         ComplexMatrix *oResultMatrix = NULL;
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -1091,13 +1091,13 @@ namespace ls {
         ////Log(lDebug5) << "Input Matrix 1D: \n";
         //ls::print(numRows, numRows, A);
 
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
+        lapack_int *ipvt = new lapack_int[numRows];
+        memset(ipvt, 0, sizeof(lapack_int) * numRows);
         doublecomplex *work = new doublecomplex[numRows];
         memset(work, 0, sizeof(doublecomplex) * numRows);
 
         // Carry out LU Factorization
-        integer info;
+        lapack_int info;
         zgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
 
         if (info < 0) {
@@ -1140,8 +1140,8 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl;
 
         ComplexMatrix *oResultMatrix = NULL;
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        lapack_int numRows = oMatrix.numRows();
+        lapack_int numCols = oMatrix.numCols();
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -1158,13 +1158,13 @@ namespace ls {
         ////Log(lDebug5) << "Input Matrix 1D: \n";
         //ls::print(numRows, numRows, A);
 
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
+        lapack_int *ipvt = new lapack_int[numRows];
+        memset(ipvt, 0, sizeof(lapack_int) * numRows);
         doublecomplex *work = new doublecomplex[numRows];
         memset(work, 0, sizeof(doublecomplex) * numRows);
 
         // Carry out LU Factorization
-        integer info;
+        lapack_int info;
         zgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
 
         if (info < 0) {
