@@ -52,12 +52,12 @@ namespace ls {
 
         if (numRows == 0) return oResult;
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
-        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
-        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
-        lapack_complex_double *work = new lapack_complex_double[lwork];
-        memset(work, 0, sizeof(lapack_complex_double) * lwork);
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
+        memset(A, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *eigVals = new std::complex<double>[numRows];
+        memset(eigVals, 0, sizeof(std::complex<double>) * numRows);
+        std::complex<double> *work = new std::complex<double>[lwork];
+        memset(work, 0, sizeof(std::complex<double>) * lwork);
         double *rwork = new double[lwork];
         memset(rwork, 0, sizeof(double) * lwork);
 
@@ -65,7 +65,7 @@ namespace ls {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numRows * i);
-                A[index].r = oMatrix(i, j);
+                A[index].real(oMatrix(i, j));
             }
         }
 
@@ -74,8 +74,8 @@ namespace ls {
 
 
         for (int i = 0; i < numRows; i++) {
-            Complex complex(ls::RoundToTolerance(eigVals[i].r, gLapackTolerance),
-                            ls::RoundToTolerance(eigVals[i].i, gLapackTolerance));
+            Complex complex(ls::RoundToTolerance(eigVals[i].real(), gLapackTolerance),
+                            ls::RoundToTolerance(eigVals[i].imag(), gLapackTolerance));
             oResult.push_back(complex);
         }
 
@@ -102,12 +102,12 @@ namespace ls {
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
-        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
-        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
-        lapack_complex_double *work = new lapack_complex_double[lwork];
-        memset(work, 0, sizeof(lapack_complex_double) * lwork);
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
+        memset(A, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *eigVals = new std::complex<double>[numRows];
+        memset(eigVals, 0, sizeof(std::complex<double>) * numRows);
+        std::complex<double> *work = new std::complex<double>[lwork];
+        memset(work, 0, sizeof(std::complex<double>) * lwork);
         double *rwork = new double[lwork];
         memset(rwork, 0, sizeof(double) * lwork);
 
@@ -116,8 +116,8 @@ namespace ls {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numRows * i);
 
-                A[index].r = real(oMatrix(j, i));
-                A[index].i = imag(oMatrix(j, i));
+                A[index].real(real(oMatrix(j, i)));
+                A[index].imag(imag(oMatrix(j, i)));
 
             }
         }
@@ -127,8 +127,8 @@ namespace ls {
 
 
         for (int i = 0; i < numRows; i++) {
-            Complex complex(ls::RoundToTolerance(eigVals[i].r, gLapackTolerance),
-                            ls::RoundToTolerance(eigVals[i].i, gLapackTolerance));
+            Complex complex(ls::RoundToTolerance(eigVals[i].real(), gLapackTolerance),
+                            ls::RoundToTolerance(eigVals[i].imag(), gLapackTolerance));
             oResult.push_back(complex);
         }
 
@@ -556,14 +556,14 @@ namespace ls {
 
         if (numRows == 0) return new ComplexMatrix();
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
-        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
-        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
-        lapack_complex_double *vr = new lapack_complex_double[numRows * numRows];
-        memset(vr, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *work = new lapack_complex_double[lwork];
-        memset(work, 0, sizeof(lapack_complex_double) * lwork);
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
+        memset(A, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *eigVals = new std::complex<double>[numRows];
+        memset(eigVals, 0, sizeof(std::complex<double>) * numRows);
+        std::complex<double> *vr = new std::complex<double>[numRows * numRows];
+        memset(vr, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *work = new std::complex<double>[lwork];
+        memset(work, 0, sizeof(std::complex<double>) * lwork);
         double *rwork = new double[lwork];
         memset(rwork, 0, sizeof(double) * lwork);
 
@@ -571,7 +571,7 @@ namespace ls {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numRows * i);
-                A[index].r = oMatrix(j, i);
+                A[index].real(oMatrix(j, i));
             }
         }
 
@@ -584,8 +584,8 @@ namespace ls {
             for (int j = 0; j < numRows; j++) {
                 index = (j + numRows * i);
                 Complex complexNr(
-                        ls::RoundToTolerance(vr[index].r, gLapackTolerance),
-                        ls::RoundToTolerance(vr[index].i, gLapackTolerance));
+                    ls::RoundToTolerance(vr[index].real(), gLapackTolerance),
+                    ls::RoundToTolerance(vr[index].imag(), gLapackTolerance));
 
                 (*oResult)(i, j) = complexNr;//(.set(complex.Real, complex.Imag);
             }
@@ -615,14 +615,14 @@ namespace ls {
 
         if (numRows == 0) return new ComplexMatrix();
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
-        memset(A, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *eigVals = new lapack_complex_double[numRows];
-        memset(eigVals, 0, sizeof(lapack_complex_double) * numRows);
-        lapack_complex_double *vr = new lapack_complex_double[numRows * numRows];
-        memset(vr, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *work = new lapack_complex_double[lwork];
-        memset(work, 0, sizeof(lapack_complex_double) * lwork);
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
+        memset(A, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *eigVals = new std::complex<double>[numRows];
+        memset(eigVals, 0, sizeof(std::complex<double>) * numRows);
+        std::complex<double> *vr = new std::complex<double>[numRows * numRows];
+        memset(vr, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *work = new std::complex<double>[lwork];
+        memset(work, 0, sizeof(std::complex<double>) * lwork);
         double *rwork = new double[lwork];
         memset(rwork, 0, sizeof(double) * lwork);
 
@@ -630,8 +630,8 @@ namespace ls {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numRows * i);
-                A[index].r = real(oMatrix(j, i));
-                A[index].i = imag(oMatrix(j, i));
+                A[index].real(real(oMatrix(j, i)));
+                A[index].imag(imag(oMatrix(j, i)));
             }
         }
 
@@ -644,8 +644,8 @@ namespace ls {
             for (int j = 0; j < numRows; j++) {
                 index = (j + numRows * i);
                 Complex complexNr(
-                        ls::RoundToTolerance(vr[index].r, gLapackTolerance),
-                        ls::RoundToTolerance(vr[index].i, gLapackTolerance));
+                    ls::RoundToTolerance(vr[index].real(), gLapackTolerance),
+                    ls::RoundToTolerance(vr[index].imag(), gLapackTolerance));
 
                 (*oResult)(i, j) = complexNr;//.set(complex.Real, complex.Imag);
             }
@@ -745,16 +745,16 @@ namespace ls {
 
         lapack_int lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
         lapack_int lrwork = 5 * min_MN * min_MN + 7 * min_MN;
-        lapack_complex_double *A = new lapack_complex_double[numRows * numCols];
-        memset(A, 0, sizeof(lapack_complex_double) * numRows * numCols);
-        lapack_complex_double *U = new lapack_complex_double[numRows * numRows];
-        memset(U, 0, sizeof(lapack_complex_double) * numRows * numRows);
-        lapack_complex_double *VT = new lapack_complex_double[numCols * numCols];
-        memset(VT, 0, sizeof(lapack_complex_double) * numCols * numCols);
+        std::complex<double> *A = new std::complex<double>[numRows * numCols];
+        memset(A, 0, sizeof(std::complex<double>) * numRows * numCols);
+        std::complex<double> *U = new std::complex<double>[numRows * numRows];
+        memset(U, 0, sizeof(std::complex<double>) * numRows * numRows);
+        std::complex<double> *VT = new std::complex<double>[numCols * numCols];
+        memset(VT, 0, sizeof(std::complex<double>) * numCols * numCols);
         double *S = new double[min_MN];
         memset(S, 0, sizeof(double) * min_MN);
-        lapack_complex_double *work = new lapack_complex_double[lwork];
-        memset(work, 0, sizeof(lapack_complex_double) * lwork);
+        std::complex<double> *work = new std::complex<double>[lwork];
+        memset(work, 0, sizeof(std::complex<double>) * lwork);
         double *rwork = new double[lrwork];
         memset(rwork, 0, sizeof(double) * lrwork);
         lapack_int *iwork = new lapack_int[8 * min_MN];
@@ -763,8 +763,8 @@ namespace ls {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numRows * i);
-                A[index].r = real(inputMatrix(j, i));
-                A[index].i = imag(inputMatrix(j, i));
+                A[index].real(real(inputMatrix(j, i)));
+                A[index].imag(imag(inputMatrix(j, i)));
             }
         }
 
@@ -777,8 +777,8 @@ namespace ls {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
                 index = (j + numRows * i);
-                (*outU)(j, i) = Complex((ls::RoundToTolerance(U[index].r, gLapackTolerance),
-                        ls::RoundToTolerance(U[index].i, gLapackTolerance)));
+                (*outU)(j, i) = Complex((ls::RoundToTolerance(U[index].real(), gLapackTolerance),
+                                         ls::RoundToTolerance(U[index].imag(), gLapackTolerance)));
             }
         }
 
@@ -786,8 +786,8 @@ namespace ls {
         for (int i = 0; i < numCols; i++) {
             for (int j = 0; j < numCols; j++) {
                 index = (j + numCols * i);
-                (*outV)(i, j) = Complex(ls::RoundToTolerance(VT[index].r, gLapackTolerance),
-                                        ls::RoundToTolerance(-VT[index].i, gLapackTolerance));
+                (*outV)(i, j) = Complex(ls::RoundToTolerance(VT[index].real(), gLapackTolerance),
+                                        ls::RoundToTolerance(-VT[index].imag(), gLapackTolerance));
             }
         }
 
@@ -1080,11 +1080,11 @@ namespace ls {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
-                A[i + numRows * j].r = real(oMatrix(i, j));
-                A[i + numRows * j].i = imag(oMatrix(i, j));
+                A[i + numRows * j].real(real(oMatrix(i, j)));
+                A[i + numRows * j].imag(imag(oMatrix(i, j)));
             }
         }
 
@@ -1093,8 +1093,8 @@ namespace ls {
 
         lapack_int *ipvt = new lapack_int[numRows];
         memset(ipvt, 0, sizeof(lapack_int) * numRows);
-        lapack_complex_double *work = new lapack_complex_double[numRows];
-        memset(work, 0, sizeof(lapack_complex_double) * numRows);
+        std::complex<double> *work = new std::complex<double>[numRows];
+        memset(work, 0, sizeof(std::complex<double>) * numRows);
 
         // Carry out LU Factorization
         lapack_int info;
@@ -1119,8 +1119,8 @@ namespace ls {
         oResultMatrix = new ComplexMatrix(numRows, numRows);
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
-                Complex tols(ls::RoundToTolerance(A[(i + numRows * j)].r, gLapackTolerance),
-                             ls::RoundToTolerance(A[(i + numRows * j)].i, gLapackTolerance));
+                Complex tols(ls::RoundToTolerance(A[(i + numRows * j)].real(), gLapackTolerance),
+                             ls::RoundToTolerance(A[(i + numRows * j)].imag(), gLapackTolerance));
                 (*oResultMatrix)(i, j) = tols;
 
             }
@@ -1147,11 +1147,11 @@ namespace ls {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        lapack_complex_double *A = new lapack_complex_double[numRows * numRows];
+        std::complex<double> *A = new std::complex<double>[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
-                A[i + numRows * j].r = real(oMatrix(i, j));
-                A[i + numRows * j].i = imag(oMatrix(i, j));
+                A[i + numRows * j].real(real(oMatrix(i, j)));
+                A[i + numRows * j].imag(imag(oMatrix(i, j)));
             }
         }
 
@@ -1160,8 +1160,8 @@ namespace ls {
 
         lapack_int *ipvt = new lapack_int[numRows];
         memset(ipvt, 0, sizeof(lapack_int) * numRows);
-        lapack_complex_double *work = new lapack_complex_double[numRows];
-        memset(work, 0, sizeof(lapack_complex_double) * numRows);
+        std::complex<double> *work = new std::complex<double>[numRows];
+        memset(work, 0, sizeof(std::complex<double>) * numRows);
 
         // Carry out LU Factorization
         lapack_int info;
@@ -1186,8 +1186,8 @@ namespace ls {
         oResultMatrix = new ComplexMatrix(numRows, numRows);
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
-                Complex tols(ls::RoundToTolerance(A[(i + numRows * j)].r, gLapackTolerance),
-                             ls::RoundToTolerance(A[(i + numRows * j)].i, gLapackTolerance));
+                Complex tols(ls::RoundToTolerance(A[(i + numRows * j)].real(), gLapackTolerance),
+                             ls::RoundToTolerance(A[(i + numRows * j)].imag(), gLapackTolerance));
                 (*oResultMatrix)(i, j) = tols;
             }
         }
