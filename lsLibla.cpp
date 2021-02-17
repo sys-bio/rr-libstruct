@@ -12,16 +12,11 @@
 #include <cmath>
 #include <sstream>
 #include <string.h>
+#include <lapacke.h>
 #include "lsLibla.h"
 #include "lsMatrix.h"
 #include "lsUtils.h"
 
-extern "C"
-{
-#include "f2c.h"
-#include "clapack.h"
-
-}
 //---------------------------------------------------------------------------
 
 namespace ls {
