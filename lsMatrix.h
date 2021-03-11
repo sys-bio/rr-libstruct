@@ -254,17 +254,17 @@ namespace ls {
         /**
          * number of rows
          */
-        unsigned int _Rows;
+        unsigned int _Rows = 0;
 
         /**
          * number of columns
          */
-        unsigned int _Cols;
+        unsigned int _Cols = 0;
 
         /**
          * pointer to block of memory of the data, stored in row-major format.
          */
-        T *_Array;
+        T *_Array = nullptr;
 
         /**
          * vector of column names, may be empty
@@ -503,11 +503,11 @@ namespace ls {
 
     template<class T>
     Matrix<T>::Matrix(std::vector<std::vector<T>> matrix)
-            : _Array(nullptr) {
+            : _Array(nullptr) { // note: do not assign _Rows or _Cols in initializer list --> seg fault.
         resize(matrix.size(), (*matrix.begin()).size());
-        for (unsigned int i = 0; i < matrix.size(); i++) {
-            for (unsigned int j = 0; j < matrix[i].size(); j++) {
-                _Array[i * _Rows + j] = matrix[i][j];
+        for (unsigned int row = 0; row < matrix.size(); row++) {
+            for (unsigned int col = 0; col < matrix[row].size(); col++) {
+                _Array[row * _Cols + col] = matrix[row][col];
             }
         }
     }
