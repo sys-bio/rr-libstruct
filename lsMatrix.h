@@ -9,6 +9,7 @@
 #if defined __unix || defined(__APPLE__)
 
 #include <cstring> //for memset on unix platforms
+#include <iostream>
 
 #endif
 
@@ -490,22 +491,23 @@ namespace ls {
 
     template<class T>
     Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> matrix)
-            : _Array(nullptr) {
+            : _Array(nullptr){ // note: do not assign _Rows or _Cols in initializer list --> seg fault.
         resize(matrix.size(), (*matrix.begin()).size());
         for (int row = 0; row < _Rows; row++) {
             const std::initializer_list<T> &r = matrix.begin()[row];
             for (int col = 0; col < _Cols; col++) {
-                _Array[row*_Cols+col ] = r.begin()[col];
+                _Array[row * _Cols + col] = r.begin()[col];
             }
         }
     }
 
     template<class T>
-    Matrix<T>::Matrix(std::vector<std::vector<T>> matrix) : _Array(nullptr) {
+    Matrix<T>::Matrix(std::vector<std::vector<T>> matrix)
+            : _Array(nullptr) {
         resize(matrix.size(), (*matrix.begin()).size());
         for (unsigned int i = 0; i < matrix.size(); i++) {
             for (unsigned int j = 0; j < matrix[i].size(); j++) {
-                _Array[i*_Rows + j] = matrix[i][j];
+                _Array[i * _Rows + j] = matrix[i][j];
             }
         }
     }
