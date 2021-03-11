@@ -146,6 +146,15 @@ namespace ls {
         Matrix<T> *getTranspose();
 
         /**
+         * @brief creates a new matrix holding the transpose
+         * like @see getTranspose() but memory is managed by a
+         * unique_ptr.
+         * @details returns a new matrix, the old one still needs deleting
+         * by the caller if dynamic.
+         */
+        std::unique_ptr<Matrix<T>> getTransposeUnique();
+
+        /**
          * assignment operator
          */
         Matrix<T> &operator=(const Matrix<T> &rhs);
@@ -490,8 +499,8 @@ namespace ls {
 
     template<class T>
     Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> matrix)
-            : _Array(nullptr) {
-        resize(matrix.size(), (*matrix.begin()).size());
+            : _Array(nullptr), _Rows(matrix.size()), _Cols((*matrix.begin()).size()) {
+        resize(_Rows, _Cols);
         for (int row = 0; row < _Rows; row++) {
             const std::initializer_list<T> &r = matrix.begin()[row];
             for (int col = 0; col < _Cols; col++) {
@@ -501,7 +510,8 @@ namespace ls {
     }
 
     template<class T>
-    Matrix<T>::Matrix(std::vector<std::vector<T>> matrix) : _Array(nullptr) {
+    Matrix<T>::Matrix(std::vector<std::vector<T>> matrix) :
+        _Array(nullptr), _Rows(matrix.size()), _Cols((*matrix.begin()).size()) {
         resize(matrix.size(), (*matrix.begin()).size());
         for (unsigned int i = 0; i < matrix.size(); i++) {
             for (unsigned int j = 0; j < matrix[i].size(); j++) {
@@ -582,6 +592,21 @@ namespace ls {
             }
         }
         return oResult;
+    }
+
+    /**
+     * @brief get transpose of this matrix as a new matrix
+     * managed by std::unique_ptr
+     */
+    template<class T>
+    std::unique_ptr<Matrix<T>> Matrix<T>::getTransposeUnique() {
+        std::unique_ptr<Matrix<T>> oResult = std::make_unique<Matrix<T>>(_Cols, _Rows   );
+        for (unsigned int i = 0; i < _Cols; i++) {
+            for (unsigned int j = 0; j < _Rows; j++) {
+                (*oResult)(i, j) = (*this)(j, i);
+            }
+        }
+        return std::move(oResult);
     }
 
     template<class T>
