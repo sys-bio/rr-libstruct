@@ -243,7 +243,7 @@ namespace ls {
             }
 
             if (i >= 1)
-                for (int j = 0; j < min(i, col); j++) {
+                for (int j = 0; j < min(i, (int)col); j++) {
                     R[i + row * j] = 0.0;
                 }
         }
@@ -345,7 +345,7 @@ namespace ls {
         int index;
         for (int i = 0; i < row; i++) {
             if (i > 0)
-                for (int j = 0; j < min(i, col); j++) {
+                for (int j = 0; j < min(i, (int)col); j++) {
                     R[i + row * j] = 0.0;
                 }
             for (int j = 0; j < minRowCol; j++) {
