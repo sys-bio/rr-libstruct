@@ -116,7 +116,7 @@ template<typename T> std::vector<std::vector<T>> Matrix<T>::getValues(){
         for (int j = 0; j < numCols(); j++) {
             store[i][j] = arr[i][j];
         }
-	free(arr[i]);
+        free(arr[i]);
     }
     free(arr);
     return store;
