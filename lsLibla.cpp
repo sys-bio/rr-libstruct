@@ -167,7 +167,11 @@ namespace ls {
         }
 
         integer minRowCol = min(row, col);
-        integer lwork = 16 * col;
+        //lwork has different optimum sizes for the two functions where we use it:
+        integer lwork_for_dgeqp3 = 2 * col + 16 * (col + 1);
+        integer lwork_for_dorgqr = 16 * row;
+
+        integer lwork = max(lwork_for_dgeqp3, lwork_for_dorgqr);
 
         doublereal *A = oMatrix.getCopy(true);
 
