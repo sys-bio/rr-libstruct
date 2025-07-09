@@ -33,7 +33,11 @@ ostream& operator<<(ostream& ss, const DoubleMatrix& mat)
 {
 	// write col names (if they exist)
 	const std::vector<std::string> &colNames = mat.getColNames();
-	if(colNames.size() > 0) {
+    const std::vector<std::string>& rowNames = mat.getRowNames();
+    if(colNames.size() > 0) {
+        if (rowNames.size() > 0) {
+            ss << "\t";
+        }
 		for(unsigned col = 0; col < colNames.size(); col++) {
 			ss << colNames[col];
 			if(col < colNames.size() -1) {
@@ -47,6 +51,9 @@ ostream& operator<<(ostream& ss, const DoubleMatrix& mat)
 
 	//Then the data
 	for(unsigned row = 0; row < mat.RSize(); row++) {
+        if (rowNames.size() > 0) {
+            ss << rowNames[row] << "\t";
+        }
 	    for(unsigned col = 0; col < mat.CSize(); col++) {
 	        if(col == 0) {
 	            ss << mat(row, col);
