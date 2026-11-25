@@ -10,18 +10,14 @@
 #include <math.h>
 #include <stdlib.h>
 #include <cmath>
+#include <algorithm>
 #include <sstream>
 #include <string.h>
 #include "lsLibla.h"
 #include "lsMatrix.h"
 #include "lsUtils.h"
 
-extern "C"
-{
-#include "f2c.h"
-#include "clapack.h"
-
-}
+#include "lsLapack.h"
 //---------------------------------------------------------------------------
 
 namespace ls {
@@ -46,10 +42,10 @@ namespace ls {
 
         vector<Complex> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
+        ls_int lwork = 2 * numRows;
+        ls_int info;
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
@@ -57,14 +53,14 @@ namespace ls {
 
         if (numRows == 0) return oResult;
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
-        doublereal *rwork = new doublereal[lwork];
-        memset(rwork, 0, sizeof(doublereal) * lwork);
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
+        memset(A, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *eigVals = new ls_dcomplex[numRows];
+        memset(eigVals, 0, sizeof(ls_dcomplex) * numRows);
+        ls_dcomplex *work = new ls_dcomplex[lwork];
+        memset(work, 0, sizeof(ls_dcomplex) * lwork);
+        double *rwork = new double[lwork];
+        memset(rwork, 0, sizeof(double) * lwork);
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -99,22 +95,22 @@ namespace ls {
 
         vector<Complex> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
+        ls_int lwork = 2 * numRows;
+        ls_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
-        doublereal *rwork = new doublereal[lwork];
-        memset(rwork, 0, sizeof(doublereal) * lwork);
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
+        memset(A, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *eigVals = new ls_dcomplex[numRows];
+        memset(eigVals, 0, sizeof(ls_dcomplex) * numRows);
+        ls_dcomplex *work = new ls_dcomplex[lwork];
+        memset(work, 0, sizeof(ls_dcomplex) * lwork);
+        double *rwork = new double[lwork];
+        memset(rwork, 0, sizeof(double) * lwork);
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -153,8 +149,8 @@ namespace ls {
 
         vector<DoubleMatrix *> oResult;
 
-        integer row = oMatrix.numRows();
-        integer col = oMatrix.numCols();
+        ls_int row = oMatrix.numRows();
+        ls_int col = oMatrix.numCols();
 
         if (row * col == 0) {
             DoubleMatrix *oMatrixQ = new DoubleMatrix(row, row);
@@ -166,30 +162,30 @@ namespace ls {
             return oResult;
         }
 
-        integer minRowCol = min(row, col);
+        ls_int minRowCol = min(row, col);
         //lwork has different optimum sizes for the two functions where we use it:
-        integer lwork_for_dgeqp3 = 2 * col + 16 * (col + 1);
-        integer lwork_for_dorgqr = 16 * row;
+        ls_int lwork_for_dgeqp3 = 2 * col + 16 * (col + 1);
+        ls_int lwork_for_dorgqr = 16 * row;
 
-        integer lwork = max(lwork_for_dgeqp3, lwork_for_dorgqr);
+        ls_int lwork = max(lwork_for_dgeqp3, lwork_for_dorgqr);
 
-        doublereal *A = oMatrix.getCopy(true);
+        double *A = oMatrix.getCopy(true);
 
 
-        doublereal *Q = NULL;
+        double *Q = NULL;
         if (row * row) {
-            Q = new doublereal[row * row];
-            memset(Q, 0, sizeof(doublereal) * row * row);
+            Q = new double[row * row];
+            memset(Q, 0, sizeof(double) * row * row);
         }
-        doublereal *R = NULL;
+        double *R = NULL;
         if (row * col) {
-            R = new doublereal[row * col];
-            memset(R, 0, sizeof(doublereal) * row * col);
+            R = new double[row * col];
+            memset(R, 0, sizeof(double) * row * col);
         }
-        doublereal *P = NULL;
+        double *P = NULL;
         if (col * col) {
-            P = new doublereal[col * col];
-            memset(P, 0, sizeof(doublereal) * col * col);
+            P = new double[col * col];
+            memset(P, 0, sizeof(double) * col * col);
         }
 
         //Log(lDebug5) << "before dorgqr A:\n"    << ls::print(row, col, A);
@@ -197,29 +193,28 @@ namespace ls {
         //Log(lDebug5) << endl << endl << "R: \n"    << ls::print(row, col, R);
         //Log(lDebug5) << endl << endl << "P: \n"    << ls::print(col, col, P);
 
-        doublereal *tau = NULL;
+        double *tau = NULL;
         if (minRowCol) {
-            tau = new doublereal[minRowCol];
-            memset(tau, 0, sizeof(doublereal) * minRowCol);
+            tau = new double[minRowCol];
+            memset(tau, 0, sizeof(double) * minRowCol);
         }
-        integer *jpvt = NULL;
+        ls_int *jpvt = NULL;
         if (col) {
-            jpvt = new integer[col];
-            memset(jpvt, 0, sizeof(integer) * col);
+            jpvt = new ls_int[col];
+            memset(jpvt, 0, sizeof(ls_int) * col);
         }
-        doublereal *work = NULL;
+        double *work = NULL;
         if (lwork) {
-            work = new doublereal[lwork];
+            work = new double[lwork];
             memset(work, 0, lwork);
         }
 
-        integer info;
-        int out;
+        ls_int info;
 
         //Log(lDebug5) << "Input:\n"<<ls::print(row, col, A);
 
         // call lapack routine dgepq3_ to generate householder reflections
-        out = dgeqp3_(&row, &col, A, &row, jpvt, tau, work, &lwork, &info);
+        dgeqp3_(&row, &col, A, &row, jpvt, tau, work, &lwork, &info);
 
         //Log(lDebug5) << "before permutation" << endl;
 
@@ -233,7 +228,7 @@ namespace ls {
         //Log(lDebug5) << "before memcpy" << endl;
 
         // set R to A before calling dorgqr
-        memcpy(R, A, sizeof(doublereal) * row * col);
+        memcpy(R, A, sizeof(double) * row * col);
 
         //Log(lDebug5) << "after memcpy" << endl;
 
@@ -259,7 +254,7 @@ namespace ls {
 
 
         // call routine dorgqr_ to build orthogonal matrix Q
-        out = dorgqr_(&row, &row, &minRowCol, Q, &row, tau, work, &lwork, &info);
+        dorgqr_(&row, &row, &minRowCol, Q, &row, tau, work, &lwork, &info);
 
         //Log(lDebug5) << endl << endl << "Q: \n"<<ls::print(row, row, Q);
         //Log(lDebug5) << endl << endl << "R: \n"<<ls::print(row, col, R);
@@ -315,8 +310,8 @@ namespace ls {
         //Log(lDebug5) << "=== getQR " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer row = oMatrix.numRows();
-        integer col = oMatrix.numCols();
+        ls_int row = oMatrix.numRows();
+        ls_int col = oMatrix.numCols();
         if (row * col == 0) {
             vector<DoubleMatrix *> oResult;
             DoubleMatrix *oMatrixQ = new DoubleMatrix(row, row);
@@ -326,20 +321,20 @@ namespace ls {
             return oResult;
         }
 
-        integer lwork = 16 * col;
-        integer minRowCol = min(row, col);
+        ls_int lwork = 16 * col;
+        ls_int minRowCol = min(row, col);
 
-        doublereal *Q = new doublereal[row * row];
-        doublereal *R = new doublereal[row * col];
-        doublereal *tau = new doublereal[minRowCol];
-        doublereal *work = new doublereal[lwork];
+        double *Q = new double[row * row];
+        double *R = new double[row * col];
+        double *tau = new double[minRowCol];
+        double *work = new double[lwork];
 
-        doublereal *A = (doublereal *) oMatrix.getCopy(true);
+        double *A = (double *) oMatrix.getCopy(true);
 
 
         //Log(lDebug5) << "Input:\n"<<ls::print(row, col, A);
 
-        integer info;
+        ls_int info;
         dgeqrf_(&row, &col, A, &row, tau, work, &lwork, &info);
 
         //Log(lDebug5) << "A: after dgeqrt)\n"<<ls::print(row, col, A);
@@ -435,27 +430,27 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl << endl;
         DoubleMatrix *oTranspose = oMatrix.getTranspose();
 
-        integer numRows = oTranspose->numRows();
-        integer numCols = oTranspose->numCols();
+        ls_int numRows = oTranspose->numRows();
+        ls_int numCols = oTranspose->numCols();
 
         // determine sizes
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
-        integer lwork = 3 * min_MN * min_MN + max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // 'A'
+        ls_int min_MN = min(numRows, numCols);
+        ls_int max_MN = max(numRows, numCols);
+        ls_int lwork = 3 * min_MN * min_MN + max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // 'A'
 
         // allocate arrays for lapack
-        doublereal *A = oTranspose->getCopy(true);
-        doublereal *S = new doublereal[min_MN];
-        memset(S, 0, sizeof(doublereal) * min_MN);
-        doublereal *work = new doublereal[lwork];
-        memset(work, 0, sizeof(doublereal) * lwork);
-        doublereal *U = new doublereal[numRows * numRows];
-        memset(U, 0, sizeof(doublereal) * numRows * numRows);
-        doublereal *VT = new doublereal[numCols * numCols];
-        memset(VT, 0, sizeof(doublereal) * numCols * numCols);
-        integer *iwork = new integer[8 * min_MN];
+        double *A = oTranspose->getCopy(true);
+        double *S = new double[min_MN];
+        memset(S, 0, sizeof(double) * min_MN);
+        double *work = new double[lwork];
+        memset(work, 0, sizeof(double) * lwork);
+        double *U = new double[numRows * numRows];
+        memset(U, 0, sizeof(double) * numRows * numRows);
+        double *VT = new double[numCols * numCols];
+        memset(VT, 0, sizeof(double) * numCols * numCols);
+        ls_int *iwork = new ls_int[8 * min_MN];
 
-        integer info;
+        ls_int info;
         char jobz = 'A';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, iwork, &info);
 
@@ -516,24 +511,24 @@ namespace ls {
 
         vector<double> oResult;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        ls_int min_MN = min(numRows, numCols);
+        ls_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return oResult;
 
-        integer lwork = 3 * min_MN + max(max_MN, 7 * min_MN);    // specified in dgesdd description
+        ls_int lwork = 3 * min_MN + max(max_MN, 7 * min_MN);    // specified in dgesdd description
 
-        doublereal *A = oMatrix.getCopy(true);
-        doublereal *S = new doublereal[min_MN];
-        memset(S, 0, sizeof(doublereal) * min_MN);
-        doublereal *work = new doublereal[lwork];
-        memset(work, 0, sizeof(doublereal) * lwork);
-        integer *iwork = new integer[8 * min_MN];
+        double *A = oMatrix.getCopy(true);
+        double *S = new double[min_MN];
+        memset(S, 0, sizeof(double) * min_MN);
+        double *work = new double[lwork];
+        memset(work, 0, sizeof(double) * lwork);
+        ls_int *iwork = new ls_int[8 * min_MN];
 
-        integer info;
+        ls_int info;
         char jobz = 'N';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, NULL, &numRows, NULL, &numCols, work, &lwork, iwork, &info);
 
@@ -555,26 +550,26 @@ namespace ls {
         //Log(lDebug5) << "=== getEigenVectors " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
+        ls_int lwork = 2 * numRows;
+        ls_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
         if (numRows == 0) return new ComplexMatrix();
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *vr = new doublecomplex[numRows * numRows];
-        memset(vr, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
-        doublereal *rwork = new doublereal[lwork];
-        memset(rwork, 0, sizeof(doublereal) * lwork);
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
+        memset(A, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *eigVals = new ls_dcomplex[numRows];
+        memset(eigVals, 0, sizeof(ls_dcomplex) * numRows);
+        ls_dcomplex *vr = new ls_dcomplex[numRows * numRows];
+        memset(vr, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *work = new ls_dcomplex[lwork];
+        memset(work, 0, sizeof(ls_dcomplex) * lwork);
+        double *rwork = new double[lwork];
+        memset(rwork, 0, sizeof(double) * lwork);
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -614,26 +609,26 @@ namespace ls {
         //Log(lDebug5) << "=== getEigenVectors " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
-        integer lwork = 2 * numRows;
-        integer info;
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
+        ls_int lwork = 2 * numRows;
+        ls_int info;
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
         if (numRows == 0) return new ComplexMatrix();
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *eigVals = new doublecomplex[numRows];
-        memset(eigVals, 0, sizeof(doublecomplex) * numRows);
-        doublecomplex *vr = new doublecomplex[numRows * numRows];
-        memset(vr, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
-        doublereal *rwork = new doublereal[lwork];
-        memset(rwork, 0, sizeof(doublereal) * lwork);
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
+        memset(A, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *eigVals = new ls_dcomplex[numRows];
+        memset(eigVals, 0, sizeof(ls_dcomplex) * numRows);
+        ls_dcomplex *vr = new ls_dcomplex[numRows * numRows];
+        memset(vr, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *work = new ls_dcomplex[lwork];
+        memset(work, 0, sizeof(ls_dcomplex) * lwork);
+        double *rwork = new double[lwork];
+        memset(rwork, 0, sizeof(double) * lwork);
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -675,31 +670,31 @@ namespace ls {
         //Log(lDebug5) << "=== getSingularValsBySVD " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = inputMatrix.numRows();
-        integer numCols = inputMatrix.numCols();
+        ls_int numRows = inputMatrix.numRows();
+        ls_int numCols = inputMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        ls_int min_MN = min(numRows, numCols);
+        ls_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return;
 
-        //integer lwork    = 3*min_MN + max(max_MN, 7*min_MN);    // specified in dgesdd description
-        integer lwork = 3 * min_MN * min_MN +
+        //ls_int lwork    = 3*min_MN + max(max_MN, 7*min_MN);    // specified in dgesdd description
+        ls_int lwork = 3 * min_MN * min_MN +
                         max(max_MN, 4 * min_MN * min_MN + 4 * min_MN); // specified in dgesdd description for job 'A'
 
-        doublereal *A = inputMatrix.getCopy(true);
-        doublereal *U = new doublereal[numRows * numRows];
-        memset(U, 0, sizeof(doublereal) * numRows * numRows);
-        doublereal *VT = new doublereal[numCols * numCols];
-        memset(VT, 0, sizeof(doublereal) * numCols * numCols);
-        doublereal *S = new doublereal[min_MN];
-        memset(S, 0, sizeof(doublereal) * min_MN);
-        doublereal *work = new doublereal[lwork];
-        memset(work, 0, sizeof(doublereal) * lwork);
-        integer *iwork = new integer[8 * min_MN];
+        double *A = inputMatrix.getCopy(true);
+        double *U = new double[numRows * numRows];
+        memset(U, 0, sizeof(double) * numRows * numRows);
+        double *VT = new double[numCols * numCols];
+        memset(VT, 0, sizeof(double) * numCols * numCols);
+        double *S = new double[min_MN];
+        memset(S, 0, sizeof(double) * min_MN);
+        double *work = new double[lwork];
+        memset(work, 0, sizeof(double) * lwork);
+        ls_int *iwork = new ls_int[8 * min_MN];
 
 
-        integer info;
+        ls_int info;
         char jobz = 'A';
         dgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, iwork, &info);
 
@@ -744,29 +739,29 @@ namespace ls {
         //Log(lDebug5) << "=== getSingularValsBySVD " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = inputMatrix.numRows();
-        integer numCols = inputMatrix.numCols();
+        ls_int numRows = inputMatrix.numRows();
+        ls_int numCols = inputMatrix.numCols();
 
-        integer min_MN = min(numRows, numCols);
-        integer max_MN = max(numRows, numCols);
+        ls_int min_MN = min(numRows, numCols);
+        ls_int max_MN = max(numRows, numCols);
 
         if (min_MN == 0) return;
 
-        integer lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
-        integer lrwork = 5 * min_MN * min_MN + 7 * min_MN;
-        doublecomplex *A = new doublecomplex[numRows * numCols];
-        memset(A, 0, sizeof(doublecomplex) * numRows * numCols);
-        doublecomplex *U = new doublecomplex[numRows * numRows];
-        memset(U, 0, sizeof(doublecomplex) * numRows * numRows);
-        doublecomplex *VT = new doublecomplex[numCols * numCols];
-        memset(VT, 0, sizeof(doublecomplex) * numCols * numCols);
-        doublereal *S = new doublereal[min_MN];
-        memset(S, 0, sizeof(doublereal) * min_MN);
-        doublecomplex *work = new doublecomplex[lwork];
-        memset(work, 0, sizeof(doublecomplex) * lwork);
-        doublereal *rwork = new doublereal[lrwork];
-        memset(rwork, 0, sizeof(doublereal) * lrwork);
-        integer *iwork = new integer[8 * min_MN];
+        ls_int lwork = min_MN * min_MN + 2 * min_MN + max_MN; // specified in dgesdd description for job 'A'
+        ls_int lrwork = 5 * min_MN * min_MN + 7 * min_MN;
+        ls_dcomplex *A = new ls_dcomplex[numRows * numCols];
+        memset(A, 0, sizeof(ls_dcomplex) * numRows * numCols);
+        ls_dcomplex *U = new ls_dcomplex[numRows * numRows];
+        memset(U, 0, sizeof(ls_dcomplex) * numRows * numRows);
+        ls_dcomplex *VT = new ls_dcomplex[numCols * numCols];
+        memset(VT, 0, sizeof(ls_dcomplex) * numCols * numCols);
+        double *S = new double[min_MN];
+        memset(S, 0, sizeof(double) * min_MN);
+        ls_dcomplex *work = new ls_dcomplex[lwork];
+        memset(work, 0, sizeof(ls_dcomplex) * lwork);
+        double *rwork = new double[lrwork];
+        memset(rwork, 0, sizeof(double) * lrwork);
+        ls_int *iwork = new ls_int[8 * min_MN];
 
         int index;
         for (int i = 0; i < numRows; i++) {
@@ -777,7 +772,7 @@ namespace ls {
             }
         }
 
-        integer info;
+        ls_int info;
         char jobz = 'A';
         zgesdd_(&jobz, &numRows, &numCols, A, &numRows, S, U, &numRows, VT, &numCols, work, &lwork, rwork, iwork,
                 &info);
@@ -817,33 +812,33 @@ namespace ls {
     }
 
     double getRCond(DoubleMatrix &oMatrix) {
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
-        integer minRC = min(numRows, numCols);
+        ls_int minRC = min(numRows, numCols);
 
         if (minRC == 0) {
             return 0.0;
         }
 
-        doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[minRC];
-        memset(vecP, 0, (sizeof(integer) * minRC));
+        double *A = (double *) oMatrix.getCopy(true);
+        ls_int *vecP = new ls_int[minRC];
+        memset(vecP, 0, (sizeof(ls_int) * minRC));
 
-        integer info;
+        ls_int info;
 
         char norm = '1';
-        integer order = numRows * numCols;
+        ls_int order = numRows * numCols;
 
-        double *work = new doublereal[4 * order];
+        double *work = new double[4 * order];
         memset(work, 0, sizeof(double) * 4 * order);
 
         double dnorm = dlange_(&norm, &numRows, &numCols, A, &numRows, work);
         dgetrf_(&numRows, &numCols, A, &numRows, vecP, &info);
         ls::checkTolerance(numRows * numCols, A, gLapackTolerance);
 
-        integer *iwork = new integer[numRows];
-        memset(iwork, 0, sizeof(integer) * numRows);
+        ls_int *iwork = new ls_int[numRows];
+        memset(iwork, 0, sizeof(ls_int) * numRows);
 
         memset(work, 0, sizeof(double) * 4 * order);
 
@@ -862,8 +857,8 @@ namespace ls {
         //Log(lDebug5) << "=== getLU " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
         int minRC = min(numRows, numCols);
 
@@ -880,11 +875,11 @@ namespace ls {
             return oResult;
         }
 
-        doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[minRC];
-        memset(vecP, 0, (sizeof(integer) * minRC));
+        double *A = (double *) oMatrix.getCopy(true);
+        ls_int *vecP = new ls_int[minRC];
+        memset(vecP, 0, (sizeof(ls_int) * minRC));
 
-        integer info;
+        ls_int info;
         dgetrf_(&numRows, &numCols, A, &numRows, vecP, &info);
 
         ls::print(numRows, numCols, A);
@@ -948,20 +943,20 @@ namespace ls {
         //Log(lDebug5) << "=== getLUwithFullPivoting " << endl;
         //Log(lDebug5) << "======================================================" << endl << endl;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
 
-        doublereal *A = (doublereal *) oMatrix.getCopy(true);
-        integer *vecP = new integer[numRows];
-        memset(vecP, 0, (sizeof(integer) * numRows));
-        integer *vecQ = new integer[numRows];
-        memset(vecQ, 0, (sizeof(integer) * numRows));
+        double *A = (double *) oMatrix.getCopy(true);
+        ls_int *vecP = new ls_int[numRows];
+        memset(vecP, 0, (sizeof(ls_int) * numRows));
+        ls_int *vecQ = new ls_int[numRows];
+        memset(vecQ, 0, (sizeof(ls_int) * numRows));
 
-        integer info;
+        ls_int info;
         dgetc2_(&numRows, A, &numRows, vecP, vecQ, &info);
 
         DoubleMatrix *L = new DoubleMatrix(numRows, numRows);
@@ -1034,25 +1029,25 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl << endl;
         DoubleMatrix *oResultMatrix = NULL;
 
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
 
         if (numRows != numCols)
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
 
 
-        doublereal *A = oMatrix.getCopy(true);
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
-        doublereal *work = new doublereal[numRows];
-        memset(work, 0, sizeof(doublereal) * numRows);
+        double *A = oMatrix.getCopy(true);
+        ls_int *ipvt = new ls_int[numRows];
+        memset(ipvt, 0, sizeof(ls_int) * numRows);
+        double *work = new double[numRows];
+        memset(work, 0, sizeof(double) * numRows);
 
         //Log(lDebug5) << "Input Matrix 1D: \n"<<ls::print(numRows, numRows, A);
 
 
         // Carry out LU Factorization
-        integer info;
+        ls_int info;
         dgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
         if (info < 0)
             throw ApplicationException("Error in dgetrf : LU Factorization", "Illegal Value");
@@ -1082,14 +1077,14 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl;
 
         ComplexMatrix *oResultMatrix = NULL;
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
                 A[i + numRows * j].r = real(oMatrix(i, j));
@@ -1100,13 +1095,13 @@ namespace ls {
         ////Log(lDebug5) << "Input Matrix 1D: \n";
         //ls::print(numRows, numRows, A);
 
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
-        doublecomplex *work = new doublecomplex[numRows];
-        memset(work, 0, sizeof(doublecomplex) * numRows);
+        ls_int *ipvt = new ls_int[numRows];
+        memset(ipvt, 0, sizeof(ls_int) * numRows);
+        ls_dcomplex *work = new ls_dcomplex[numRows];
+        memset(work, 0, sizeof(ls_dcomplex) * numRows);
 
         // Carry out LU Factorization
-        integer info;
+        ls_int info;
         zgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
 
         if (info < 0) {
@@ -1149,14 +1144,14 @@ namespace ls {
         //Log(lDebug5) << "======================================================" << endl;
 
         ComplexMatrix *oResultMatrix = NULL;
-        integer numRows = oMatrix.numRows();
-        integer numCols = oMatrix.numCols();
+        ls_int numRows = oMatrix.numRows();
+        ls_int numCols = oMatrix.numCols();
 
         if (numRows != numCols) {
             throw ApplicationException("Input Matrix must be square", "Expecting a Square Matrix");
         }
 
-        doublecomplex *A = new doublecomplex[numRows * numRows];
+        ls_dcomplex *A = new ls_dcomplex[numRows * numRows];
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numRows; j++) {
                 A[i + numRows * j].r = real(oMatrix(i, j));
@@ -1167,13 +1162,13 @@ namespace ls {
         ////Log(lDebug5) << "Input Matrix 1D: \n";
         //ls::print(numRows, numRows, A);
 
-        integer *ipvt = new integer[numRows];
-        memset(ipvt, 0, sizeof(integer) * numRows);
-        doublecomplex *work = new doublecomplex[numRows];
-        memset(work, 0, sizeof(doublecomplex) * numRows);
+        ls_int *ipvt = new ls_int[numRows];
+        memset(ipvt, 0, sizeof(ls_int) * numRows);
+        ls_dcomplex *work = new ls_dcomplex[numRows];
+        memset(work, 0, sizeof(ls_dcomplex) * numRows);
 
         // Carry out LU Factorization
-        integer info;
+        ls_int info;
         zgetrf_(&numRows, &numRows, A, &numRows, ipvt, &info);
 
         if (info < 0) {

@@ -53,7 +53,6 @@ endif ()
 
 target_include_directories(${target}-static PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CLAPACK_INCLUDE_DIR}
         ${LIBSBML_INCLUDE_DIR}
         )
 
@@ -79,6 +78,7 @@ set(headers
         lsMatrix.h
         lsLibStructural.h
         lsLA.h
+        lsLapack.h
         lsLibla.h
         lsLUResult.h
         lsUtils.h
